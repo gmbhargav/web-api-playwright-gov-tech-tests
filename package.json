@@ -1,0 +1,38 @@
+{
+  "name": "web-playwright-gov-tech-tests",
+  "version": "1.0.0",
+  "description": "Test automation framework to test WEB using playwright",
+  "main": "index.js",
+  "scripts": {
+    "test:api": "playwright test api-tests/tests/ --reporter=html",
+    "test:api:people": "playwright test api-tests/tests/people-api.spec.ts",
+    "test:api:person": "playwright test api-tests/tests/person-api.spec.ts",
+    "test:api:headed": "playwright test api-tests/tests/ --headed",
+    "test:all": "playwright test",
+    "test:web": "playwright test web-tests/tests/ --reporter=html --headed",
+    "test:web:smoke": "playwright test --grep @smoke --reporter=list --headed",
+    "test:web:regression": "playwright test --grep @regression --reporter=html --headed",
+    "generate:api-report": "ts-node utils/api-test-reporter.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmbhargav/web-playwright-gov-tech-tests.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gmbhargav/web-playwright-gov-tech-tests/issues"
+  },
+  "homepage": "https://github.com/gmbhargav/web-playwright-gov-tech-tests#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.9",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^9.39.2",
+    "prettier": "^3.8.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}
