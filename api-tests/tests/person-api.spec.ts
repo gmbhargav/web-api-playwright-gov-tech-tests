@@ -1,8 +1,8 @@
-// api-tests/tests/person-api.spec.ts - FIXED
+// api-tests/tests/person-api.spec.ts - Updated
 import { test, expect } from '@playwright/test';
 import { SwapiService } from '../services/swapi.service';
 import { API_CONFIG, TEST_DATA } from '../fixtures/api-data';
-import { validatePersonSchema } from '../fixtures/api-schemas';
+import { Person } from '../models/person.model';
 
 let swapiService: SwapiService;
 
@@ -29,22 +29,28 @@ test.describe('SWAPI Individual Person API Tests', () => {
       expect(apiResponse.status, `Person ${id} should return 200`).toBe(200);
       
       // Get person data
-      const person = apiResponse.data;
+      const person: Person = apiResponse.data;
       
       // Assert data
       expect(person, `Person ${id} should exist`).toBeDefined();
       expect(person.url, `Person ${id} URL should match ID`).toBe(`https://swapi.dev/api/people/${id}/`);
       
-      // Validate schema
-      validatePersonSchema(person);
+      // Check required fields
+      API_CONFIG.REQUIRED_FIELDS.forEach(field => {
+        expect(person, `Person ${id} missing field: ${field}`).toHaveProperty(field);
+      });
+      
+      // Check gender is valid
+      const gender = person.gender.toLowerCase();
+      expect(API_CONFIG.VALID_GENDERS).toContain(gender);
       
       console.log(`✓ Person ${id} (${person.name}) validated in ${apiResponse.responseTime}ms`);
     }
   });
 
   test('TC-API-11: Verify all 82 people are accessible', async () => {
-    const errors = [];
-    const validatedPeople = [];
+    const errors: string[] = [];
+    const validatedPeople: Person[] = [];
     
     // Test all 82 people
     for (let id = 1; id <= 82; id++) {
@@ -54,7 +60,7 @@ test.describe('SWAPI Individual Person API Tests', () => {
         // Check HTTP status
         expect(apiResponse.status, `Person ${id} should return 200`).toBe(200);
         
-        const person = apiResponse.data;
+        const person: Person = apiResponse.data;
         validatedPeople.push(person);
         
         // Quick validation
@@ -81,7 +87,7 @@ test.describe('SWAPI Individual Person API Tests', () => {
     
     for (const id of sampleIds) {
       const apiResponse = await swapiService.getPersonById(id);
-      const person = apiResponse.data;
+      const person: Person = apiResponse.data;
       const gender = person.gender.toLowerCase();
       
       if (API_CONFIG.VALID_GENDERS.includes(gender as any)) {
@@ -104,7 +110,7 @@ test.describe('SWAPI Individual Person API Tests', () => {
     
     for (const id of testIds) {
       const apiResponse = await swapiService.getPersonById(id);
-      const person = apiResponse.data;
+      const person: Person = apiResponse.data;
       
       // Check all required fields
       API_CONFIG.REQUIRED_FIELDS.forEach(field => {
@@ -155,11 +161,13 @@ test.describe('SWAPI Individual Person API Tests', () => {
     const listPerson = listResponse.results[0];
     
     // Extract ID from URL
-    const id = parseInt(listPerson.url.match(/\/(\d+)\/$/)![1]);
+    const idMatch = listPerson.url.match(/\/(\d+)\/$/);
+    expect(idMatch, `Could not extract ID from URL: ${listPerson.url}`).not.toBeNull();
+    const id = parseInt(idMatch![1]);
     
     // Get same person from detail endpoint
     const detailResponse = await swapiService.getPersonById(id);
-    const detailPerson = detailResponse.data;
+    const detailPerson: Person = detailResponse.data;
     
     // Compare - they should match
     expect(detailPerson.name).toBe(listPerson.name);
@@ -188,7 +196,7 @@ test.describe('SWAPI Individual Person API Tests', () => {
 
   test('TC-API-17: Verify URL patterns in response', async () => {
     const apiResponse = await swapiService.getPersonById(1);
-    const person = apiResponse.data;
+    const person: Person = apiResponse.data;
     
     // Check person URL
     expect(person.url).toMatch(/^https:\/\/swapi\.dev\/api\/people\/\d+\/$/);
@@ -217,12 +225,12 @@ test.describe('SWAPI Individual Person API Tests', () => {
   test('TC-API-18: Test response for boundary IDs', async () => {
     // Test first person
     const firstResponse = await swapiService.getPersonById(1);
-    const firstPerson = firstResponse.data;
+    const firstPerson: Person = firstResponse.data;
     expect(firstPerson.name).toBe('Luke Skywalker');
     
     // Test last person
     const lastResponse = await swapiService.getPersonById(82);
-    const lastPerson = lastResponse.data;
+    const lastPerson: Person = lastResponse.data;
     expect(lastPerson).toBeDefined();
     expect(lastPerson.url).toBe('https://swapi.dev/api/people/82/');
     
@@ -231,7 +239,7 @@ test.describe('SWAPI Individual Person API Tests', () => {
 
   test('TC-API-19: Verify data types in response', async () => {
     const apiResponse = await swapiService.getPersonById(1);
-    const person = apiResponse.data;
+    const person: Person = apiResponse.data;
     
     // Check data types
     expect(typeof person.name).toBe('string');

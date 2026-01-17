@@ -1,4 +1,3 @@
-// utils/api-test-reporter.ts
 import { TestResult } from '../api-tests/models/api-response.model';
 import * as fs from 'fs';
 import * as path from 'path';

@@ -1,7 +1,6 @@
-import { Person } from "./person.model";
+import { Person } from './person.model';
 
-// api-tests/models/api-response.model.ts
-export interface ApiResponse<T> {
+export interface ApiResponseWrapper<T> {
   status: number;
   statusText: string;
   headers: Record<string, string>;
@@ -18,3 +17,12 @@ export interface PeopleApiResponse {
 }
 
 export interface PersonApiResponse extends Person {}
+
+export interface TestResult {
+  testName: string;
+  passed: boolean;
+  message: string;
+  duration: number;
+  data?: any;
+  error?: string;
+}

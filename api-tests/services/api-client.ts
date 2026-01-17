@@ -1,4 +1,6 @@
+// api-tests/services/api-client.ts - Updated
 import { APIRequestContext, APIResponse, request } from '@playwright/test';
+import { ApiResponseWrapper } from '../models/api-response.model';
 
 export class ApiClient {
   private requestContext: APIRequestContext;
@@ -26,7 +28,7 @@ export class ApiClient {
     }
   }
 
-  async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponse<T>> {
+  async get<T>(endpoint: string, params?: Record<string, any>): Promise<ApiResponseWrapper<T>> {
     const startTime = Date.now();
     
     try {
@@ -44,13 +46,13 @@ export class ApiClient {
         data: await response.json() as T,
         responseTime
       };
-    } catch (error) {
+    } catch (error: any) {
       const responseTime = Date.now() - startTime;
-      throw {
+      return {
         status: 0,
         statusText: 'Request Failed',
         headers: {},
-        data: null,
+        data: null as any,
         responseTime,
         error: error.message
       };

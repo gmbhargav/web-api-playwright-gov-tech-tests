@@ -1,7 +1,11 @@
 // api-tests/services/swapi.service.ts - Updated
 import { ApiClient } from './api-client';
 import { Person } from '../models/person.model';
-import { PeopleApiResponse, PersonApiResponse, ApiResponse } from '../models/api-response.model';
+import { 
+  ApiResponseWrapper, 
+  PeopleApiResponse, 
+  PersonApiResponse 
+} from '../models/api-response.model';
 
 export class SwapiService {
   private apiClient: ApiClient;
@@ -18,7 +22,7 @@ export class SwapiService {
     await this.apiClient.dispose();
   }
 
-  async getAllPeople(page?: number): Promise<ApiResponse<PeopleApiResponse>> {
+  async getAllPeople(page?: number): Promise<ApiResponseWrapper<PeopleApiResponse>> {
     const endpoint = '/people/';
     const params = page ? { page } : undefined;
     
@@ -26,7 +30,7 @@ export class SwapiService {
     return response;
   }
 
-  async getPersonById(id: number): Promise<ApiResponse<PersonApiResponse>> {
+  async getPersonById(id: number): Promise<ApiResponseWrapper<PersonApiResponse>> {
     const endpoint = `/people/${id}/`;
     const response = await this.apiClient.get<PersonApiResponse>(endpoint);
     return response;
@@ -76,12 +80,6 @@ export class SwapiService {
     }
     
     return errors;
-  }
-
-  async getResponseTime(endpoint: string): Promise<number> {
-    const startTime = Date.now();
-    await this.apiClient.get(endpoint);
-    return Date.now() - startTime;
   }
 
   // Helper method to extract just the data

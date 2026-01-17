@@ -1,8 +1,7 @@
-// api-tests/tests/people-api.spec.ts - FIXED
+// api-tests/tests/people-api.spec.ts - Updated
 import { test, expect } from '@playwright/test';
 import { SwapiService } from '../services/swapi.service';
 import { API_CONFIG, TEST_DATA } from '../fixtures/api-data';
-import { validatePersonSchema } from '../fixtures/api-schemas';
 import { PeopleApiResponse } from '../models/api-response.model';
 
 let swapiService: SwapiService;
@@ -24,7 +23,7 @@ test.describe('SWAPI People API Tests', () => {
 
   test('TC-API-01: Get list of people returns maximum 82 characters', async () => {
     // Act - Use the helper method that returns just data
-    const response = await swapiService.getAllPeopleData();
+    const response: PeopleApiResponse = await swapiService.getAllPeopleData();
     
     // Assert
     expect(response.count, 'Total people count should be 82').toBe(API_CONFIG.EXPECTED_PEOPLE_COUNT);
@@ -37,17 +36,17 @@ test.describe('SWAPI People API Tests', () => {
 
   test('TC-API-02: Verify pagination works correctly', async () => {
     // Get full response including status
-    const response = await swapiService.getAllPeople();
+    const apiResponse = await swapiService.getAllPeople();
     
     // Check status
-    expect(response.status, 'Response status should be 200').toBe(200);
-    expect(response.statusText, 'Response status text should be OK').toBe('OK');
+    expect(apiResponse.status, 'Response status should be 200').toBe(200);
+    expect(apiResponse.statusText, 'Response status text should be OK').toBe('OK');
     
     // Check data
-    expect(response.data.count).toBe(API_CONFIG.EXPECTED_PEOPLE_COUNT);
-    expect(response.data.results.length).toBe(10);
+    expect(apiResponse.data.count).toBe(API_CONFIG.EXPECTED_PEOPLE_COUNT);
+    expect(apiResponse.data.results.length).toBe(10);
     
-    console.log(`Response time: ${response.responseTime}ms`);
+    console.log(`Response time: ${apiResponse.responseTime}ms`);
   });
 
   test('TC-API-03: Verify response structure for people list', async () => {
@@ -58,7 +57,7 @@ test.describe('SWAPI People API Tests', () => {
     expect(apiResponse.status).toBe(200);
     
     // Get data
-    const response = apiResponse.data;
+    const response: PeopleApiResponse = apiResponse.data;
     
     // Assert - Check response structure
     expect(response).toHaveProperty('count');
@@ -103,22 +102,20 @@ test.describe('SWAPI People API Tests', () => {
     const MAX_RESPONSE_TIME = 3000;
     
     // Act - Get full response to access responseTime
-    const startTime = Date.now();
-    const response = await swapiService.getAllPeople();
-    const actualResponseTime = response.responseTime;
+    const apiResponse = await swapiService.getAllPeople();
+    const actualResponseTime = apiResponse.responseTime;
     
     // Assert
     expect(actualResponseTime, `Response time ${actualResponseTime}ms should be under ${MAX_RESPONSE_TIME}ms`)
       .toBeLessThan(MAX_RESPONSE_TIME);
-    expect(response.status, 'Response should be successful').toBe(200);
+    expect(apiResponse.status, 'Response should be successful').toBe(200);
     
-    console.log(`API Response time: ${actualResponseTime}ms`);
-    console.log(`Manual timing: ${Date.now() - startTime}ms`);
+    console.log(`API Response time: ${apiResponse.responseTime}ms`);
   });
 
   test('TC-API-06: Verify each person in first page has valid data', async () => {
     // Act
-    const response = await swapiService.getAllPeopleData();
+    const response: PeopleApiResponse = await swapiService.getAllPeopleData();
     
     // Assert - Validate each person in first page
     for (const [index, person] of response.results.entries()) {
@@ -143,18 +140,18 @@ test.describe('SWAPI People API Tests', () => {
 
   test('TC-API-07: Test with different page numbers', async () => {
     // Test first page
-    const page1 = await swapiService.getAllPeopleData(1);
+    const page1: PeopleApiResponse = await swapiService.getAllPeopleData(1);
     expect(page1.results.length).toBe(10);
     expect(page1.previous).toBeNull();
     expect(page1.next).toContain('page=2');
     
     // Test second page
-    const page2 = await swapiService.getAllPeopleData(2);
+    const page2: PeopleApiResponse = await swapiService.getAllPeopleData(2);
     expect(page2.results.length).toBe(10);
     expect(page2.previous).toContain('page=1');
     
     // Test last page (page 9 should have 2 people)
-    const page9 = await swapiService.getAllPeopleData(9);
+    const page9: PeopleApiResponse = await swapiService.getAllPeopleData(9);
     expect(page9.results.length).toBe(2);
     expect(page9.next).toBeNull();
     
@@ -163,27 +160,27 @@ test.describe('SWAPI People API Tests', () => {
 
   test('TC-API-08: Verify response headers', async () => {
     // Get full response to access headers
-    const response = await swapiService.getAllPeople();
+    const apiResponse = await swapiService.getAllPeople();
     
     // Assert headers
-    expect(response.headers['content-type']).toContain('application/json');
-    expect(response.headers).toHaveProperty('date');
-    expect(response.headers).toHaveProperty('server');
+    expect(apiResponse.headers['content-type']).toContain('application/json');
+    expect(apiResponse.headers).toHaveProperty('date');
+    expect(apiResponse.headers).toHaveProperty('server');
     
     console.log('Response headers validated');
-    console.log('Content-Type:', response.headers['content-type']);
+    console.log('Content-Type:', apiResponse.headers['content-type']);
   });
 
   test('TC-API-09: Edge case - Invalid page number returns appropriate response', async () => {
     try {
       // Try to get a very high page number
-      const response = await swapiService.getAllPeople(999);
+      const apiResponse = await swapiService.getAllPeople(999);
       
       // If it returns successfully, check if results are empty
-      if (response.status === 200) {
-        expect(response.data.results).toEqual([]);
-        expect(response.data.next).toBeNull();
-        expect(response.data.previous).toBeNull();
+      if (apiResponse.status === 200) {
+        expect(apiResponse.data.results).toEqual([]);
+        expect(apiResponse.data.next).toBeNull();
+        expect(apiResponse.data.previous).toBeNull();
       }
     } catch (error: any) {
       // Or it might return an error
