@@ -4,15 +4,12 @@
   "description": "Test automation framework to test WEB using playwright",
   "main": "index.js",
   "scripts": {
-    "test:api": "playwright test api-tests/tests/ --reporter=html",
-    "test:api:people": "playwright test api-tests/tests/people-api.spec.ts",
-    "test:api:person": "playwright test api-tests/tests/person-api.spec.ts",
-    "test:api:headed": "playwright test api-tests/tests/ --headed",
-    "test:all": "playwright test",
-    "test:web": "playwright test web-tests/tests/ --reporter=html --headed",
-    "test:web:smoke": "playwright test --grep @smoke --reporter=list --headed",
-    "test:web:regression": "playwright test --grep @regression --reporter=html --headed",
-    "generate:api-report": "ts-node utils/api-test-reporter.ts"
+    "test:api": "npx playwright test api-tests/tests/ --reporter=html --headed",
+    "test:all": "npx playwright test --headed --reporter=html",
+    "test:web": "npx playwright test web-tests/tests/ --reporter=html --headed",
+    "test:web:smoke": "npx playwright test --grep @smoke --reporter=list --headed",
+    "test:web:regression": "npx playwright test --grep @regression --reporter=html --headed",
+    "show:report": "npx playwright show-report"
   },
   "repository": {
     "type": "git",

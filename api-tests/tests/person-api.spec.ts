@@ -18,10 +18,10 @@ test.describe('SWAPI Minimal API Tests', () => {
   });
 
   test('Get list of people returns 82 characters', async () => {
-    const response = await apiContext.get('/people/');
+    const response = await apiContext.get('https://swapi.dev/api/people/');
     console.log(`Response Status: ${response.status()} ${response.statusText()}`);
-    // console.log(`Response: ${JSON.stringify(await response.json(), null, 2)}`);
-    // expect(response.ok()).toBeTruthy();
+    console.log(`Response: ${JSON.stringify(await response.json(), null, 2)}`);
+    expect(response.ok()).toBeTruthy();
     
     const data = await response.json();
     expect(data.count).toBe(82);
@@ -38,9 +38,10 @@ test.describe('SWAPI Minimal API Tests', () => {
   test('Get individual person by ID', async () => {
     // Test first 5 people
     for (let id = 1; id <= 5; id++) {
-      const response = await apiContext.get(`/people/${id}/`);
-      // console.log(`Response: ${JSON.stringify(await response.json(), null, 2)}`);
-      // expect(response.ok()).toBeTruthy();
+      const response = await apiContext.get(`https://swapi.dev/api/people/${id}/`);
+      console.log(`Response Status: ${response.status()} ${response.statusText()}`);
+      console.log(`Response: ${JSON.stringify(await response.json(), null, 2)}`);
+      expect(response.ok()).toBeTruthy();
       
       const person = await response.json();
       
@@ -71,10 +72,11 @@ test.describe('SWAPI Minimal API Tests', () => {
   });
 
   test('Invalid person ID returns 404', async () => {
-    const invalidIds = [0, 83, 100, -1];
+    const invalidIds = [0, 84, 100, -1];
     
     for (const id of invalidIds) {
-      const response = await apiContext.get(`/people/${id}/`);
+      const response = await apiContext.get(`https://swapi.dev/api/people/${id}/`);
+      console.log(`Response Status for ID ${id}: ${response.status()} ${response.statusText()}`);
       expect(response.status()).toBe(404);
     }
   });

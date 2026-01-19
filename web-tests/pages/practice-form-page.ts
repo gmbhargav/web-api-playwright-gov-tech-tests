@@ -79,24 +79,11 @@ export class PracticeFormPage {
       await hobbyCheckbox.click();
     }
     
-    // 7. Picture upload (optional)
-    try {
-      // Create a test image if it doesn't exist
+    // 7. Picture upload 
       const fs = require('fs');
       const path = require('path');
       const imagePath = path.join(__dirname, '../fixtures/test-image.jpg');
-      
-      if (!fs.existsSync(imagePath)) {
-        // Create a dummy image file
-        console.log('Creating dummy image file...');
-        fs.writeFileSync(imagePath, '');
-      }
-      
-      await this.pictureUpload.setInputFiles('./fixtures/test-image.jpg');
-    } catch (error) {
-      console.log('Skipping picture upload:', error.message);
-    }
-    
+      await this.pictureUpload.setInputFiles(imagePath);
     // 8. Address
     await this.address.fill(currentAddress);
     
