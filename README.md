@@ -38,6 +38,7 @@ project/
 > ├── web-tests/fixtures/     # Test data
 
 > └── playwright.config.ts
+> └── playwright-report/index.html  # html report
 
 **What We Test**
 
